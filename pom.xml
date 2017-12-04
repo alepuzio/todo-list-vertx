@@ -8,7 +8,7 @@
   <properties>
     <maven.compiler.target>1.9</maven.compiler.target>
     <vertx-maven-plugin.version>1.0.13</vertx-maven-plugin.version>
-    <vertx.verticle>io.vertx.mokabyte.todo</vertx.verticle>
+    <vertx.verticle>io.vertx.mokabyte.Todo</vertx.verticle>
     <maven.compiler.source>1.9</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <vertx.version>3.5.0</vertx.version>
@@ -32,6 +32,16 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.1.11</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
     </dependency>
   </dependencies>
   <build>
