@@ -42,7 +42,7 @@ public class WebVerticle extends AbstractVerticle {
                 .requestHandler(router::accept)
                 .listen(HTTP_PORT, accepted -> {
                     if (accepted.succeeded()) {
-                        webFuture.succeeded();
+                        webFuture.complete();
                     } else {
                         webFuture.fail(accepted.cause());
                     }
