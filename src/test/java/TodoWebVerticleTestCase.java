@@ -25,6 +25,11 @@ public class TodoWebVerticleTestCase {
         vertx.deployVerticle(WebVerticle.class.getName(), options, context.asyncAssertSuccess());
     }
 
+    @After
+    public void tearDown(TestContext context) {
+        vertx.close(context.asyncAssertSuccess());
+    }
+
     @Test
     public void when_request_root_return_index_page(final TestContext context) {
         final Async async = context.async();
@@ -33,10 +38,5 @@ public class TodoWebVerticleTestCase {
             context.assertTrue(body.toString().contains("Vert.x page"));
             async.complete();
         }));
-    }
-
-    @After
-    public void tearDown(TestContext context) {
-        vertx.close(context.asyncAssertSuccess());
     }
 }
