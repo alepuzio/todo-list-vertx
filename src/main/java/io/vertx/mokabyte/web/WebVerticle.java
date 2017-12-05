@@ -2,6 +2,7 @@ package io.vertx.mokabyte.web;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
@@ -9,19 +10,23 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.mokabyte.model.TodoModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class WebVerticle extends AbstractVerticle {
+    private static final Logger logger = LoggerFactory.getLogger(WebVerticle.class);
+    private static final int HTTP_PORT = 9000;
 
     private final Map<Long, TodoModel> todoModelList = new HashMap<>();
 
     @Override
-    public void start(final Future<Void> webFuture) throws Exception {
+    public void start(final Future<Void> webFuture) {
         final Router router = Router.router(getVertx());
-        router.route("/").handler(StaticHandler.create("web"));
+        router.route(HttpMethod.GET,"/").handler(StaticHandler.create("web"));
 
         //Define API REST Routing
         router.get("/api/todo").handler(this::getAll);
@@ -32,15 +37,22 @@ public class WebVerticle extends AbstractVerticle {
         router.put("/api/todo/:id").handler(this::updateTodoItem);
         router.delete("/api/todo/:id").handler(this::deleteTodoItem);
 
+        logger.info("Try to start WebServer on port: {}", HTTP_PORT);
         getVertx().createHttpServer()
                 .requestHandler(router::accept)
-                .listen(9000, accepted -> {
+                .listen(HTTP_PORT, accepted -> {
                     if (accepted.succeeded()) {
                         webFuture.succeeded();
                     } else {
                         webFuture.fail(accepted.cause());
                     }
                 });
+        logger.info("Successful start WebServer on port: {}", HTTP_PORT);
+    }
+
+    @Override
+    public void stop(Future<Void> stopFuture) throws Exception {
+        super.stop(stopFuture);
     }
 
     private void getAll(final RoutingContext routingContext) {
