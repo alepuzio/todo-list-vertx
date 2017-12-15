@@ -31,11 +31,11 @@ public class TodoWebVerticleTestCase {
     }
 
     @Test
-    public void when_request_root_return_index_page(final TestContext context) {
+    public void whenRequestRootReturnIndexPage(final TestContext context) {
         final Async async = context.async();
 
         vertx.createHttpClient().getNow(HTTP_PORT, "localhost", "/", response -> response.handler(body -> {
-            context.assertTrue(body.toString().contains("Vert.x page"));
+            context.assertTrue(body.toString().contains("Todo Vert.X App"));
             async.complete();
         }));
     }
