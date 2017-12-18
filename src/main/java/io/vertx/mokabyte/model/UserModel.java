@@ -1,5 +1,10 @@
 package io.vertx.mokabyte.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.vertx.mokabyte.serializer.LocalDateDeserializer;
+import io.vertx.mokabyte.serializer.LocalDateSerializer;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -21,6 +26,8 @@ public class UserModel implements Serializable {
 
     private String email;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDateTime creationDate;
 
     public UserModel() {
