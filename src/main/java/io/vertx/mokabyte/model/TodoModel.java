@@ -20,8 +20,6 @@ public class TodoModel implements Serializable {
 
     private UserModel user;
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDateTime creationDate;
 
     public TodoModel() {
@@ -49,10 +47,12 @@ public class TodoModel implements Serializable {
         this.user = user;
     }
 
+    @JsonSerialize(using = LocalDateSerializer.class)
     public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
