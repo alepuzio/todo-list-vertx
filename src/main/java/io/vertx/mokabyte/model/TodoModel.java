@@ -1,5 +1,10 @@
 package io.vertx.mokabyte.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.vertx.mokabyte.serializer.LocalDateDeserializer;
+import io.vertx.mokabyte.serializer.LocalDateSerializer;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -42,10 +47,12 @@ public class TodoModel implements Serializable {
         this.user = user;
     }
 
+    @JsonSerialize(using = LocalDateSerializer.class)
     public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
