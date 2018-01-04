@@ -1,21 +1,62 @@
 package io.vertx.mokabyte;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
-import io.vertx.core.Launcher;
+import io.vertx.core.*;
+import io.vertx.core.json.JsonObject;
+import io.vertx.mokabyte.datastore.DataSourceUtil;
+import io.vertx.mokabyte.datastore.DataStoreVerticle;
 import io.vertx.mokabyte.web.WebVerticle;
+import org.flywaydb.core.Flyway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Todo extends AbstractVerticle {
+    private static final Logger logger = LoggerFactory.getLogger(Todo.class);
 
     @Override
     public void start(Future<Void> startFuture) {
-        getVertx().deployVerticle(new WebVerticle(), result -> {
+        logger.info("Start Vertx Todo List");
+        CompositeFuture.all(
+                initDb(config()),
+                deploy(WebVerticle.class),
+                deploy(DataStoreVerticle.class))
+                .setHandler(result -> {
+                    if (result.succeeded()) {
+                        startFuture.complete();
+                    } else {
+                        startFuture.fail(result.cause());
+                    }
+                });
+
+    }
+
+    private Future<Void> deploy(Class<? extends Verticle> verticle) {
+        final Future<Void> done = Future.future();
+        getVertx().deployVerticle(verticle, new DeploymentOptions(), result -> {
             if (result.succeeded()) {
-                startFuture.complete();
+                done.complete();
             } else {
-                startFuture.fail(result.cause());
+                logger.error("Error to deploy Verticle: {}", verticle.getClass().getName());
+                done.fail(result.cause());
             }
         });
+
+        return done;
+    }
+
+    private Future<Void> initDb(final JsonObject config) {
+        final Future<Void> done = Future.future();
+        getVertx().executeBlocking(initDbFeature -> {
+            final Flyway flyway = new Flyway();
+            flyway.setDataSource(DataSourceUtil.initDataSource(config));
+            flyway.migrate();
+
+            initDbFeature.complete();
+        }, initRes -> {
+            logger.info("Db Init Successfully");
+            done.complete();
+        });
+
+        return done;
     }
 
     public static void main(String[] args) {
