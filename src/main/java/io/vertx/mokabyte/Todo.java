@@ -2,7 +2,7 @@ package io.vertx.mokabyte;
 
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mokabyte.datastore.DataSourceUtil;
+import io.vertx.mokabyte.datastore.DataSourceConfig;
 import io.vertx.mokabyte.datastore.DataStoreVerticle;
 import io.vertx.mokabyte.web.WebVerticle;
 import org.flywaydb.core.Flyway;
@@ -47,7 +47,7 @@ public class Todo extends AbstractVerticle {
         final Future<Void> done = Future.future();
         getVertx().executeBlocking(initDbFeature -> {
             final Flyway flyway = new Flyway();
-            flyway.setDataSource(DataSourceUtil.initDataSource(config));
+            flyway.setDataSource(DataSourceConfig.initDataSource(config));
             flyway.migrate();
 
             initDbFeature.complete();

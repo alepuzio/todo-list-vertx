@@ -5,7 +5,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
-public class DataSourceUtil {
+public class DataSourceConfig {
 
     public static DataSource initDataSource(final JsonObject config) {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
