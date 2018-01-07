@@ -14,7 +14,7 @@ public class Todo extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) {
-        logger.info("Start Vertx Todo List");
+        logger.info("Start Vert.x Todo List");
         CompositeFuture.all(
                 initDb(config()),
                 deploy(WebVerticle.class),
@@ -24,9 +24,15 @@ public class Todo extends AbstractVerticle {
                         startFuture.complete();
                     } else {
                         startFuture.fail(result.cause());
+                        getVertx().close();
                     }
                 });
 
+    }
+
+    @Override
+    public void stop(Future<Void> stopFuture) {
+        stopFuture.complete();
     }
 
     private Future<Void> deploy(Class<? extends Verticle> verticle) {
@@ -52,15 +58,19 @@ public class Todo extends AbstractVerticle {
 
             initDbFeature.complete();
         }, initRes -> {
-            logger.info("Db Init Successfully");
-            done.complete();
+            if (initRes.succeeded()) {
+                logger.info("Db Init Successfully");
+                done.complete();
+            } else {
+                done.fail(initRes.cause());
+            }
         });
 
         return done;
     }
 
     public static void main(String[] args) {
-        Launcher.executeCommand("run", Todo.class.getName());
+        Launcher.executeCommand("run", Todo.class.getName(), args[0], args[1]);
     }
 
 }
