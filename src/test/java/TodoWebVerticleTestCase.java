@@ -6,7 +6,6 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.mokabyte.model.TodoModel;
-import io.vertx.mokabyte.model.UserModel;
 import io.vertx.mokabyte.web.WebVerticle;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -34,16 +33,7 @@ public class TodoWebVerticleTestCase {
 
     @Before
     public void setUp() {
-        final UserModel userModel = new UserModel();
-        userModel.setName("Marco");
-        userModel.setSurname("Rotondi");
-        userModel.setEmail("email@email.it");
-        userModel.setUsername("mrc");
-        userModel.setPassword("secret");
-
-        todoModel = new TodoModel();
-        todoModel.setTodoText("Appointment with All");
-        todoModel.setUser(userModel);
+        todoModel = TestUtil.createTestModel();
     }
 
     @AfterClass
