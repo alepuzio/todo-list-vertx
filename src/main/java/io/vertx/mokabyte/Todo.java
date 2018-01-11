@@ -30,7 +30,6 @@ public class Todo extends AbstractVerticle {
                         getVertx().close();
                     }
                 });
-
     }
 
     @Override
