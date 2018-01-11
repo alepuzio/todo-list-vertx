@@ -14,11 +14,14 @@ public class Todo extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) {
-        logger.info("Start Vert.x Todo List");
+        final JsonObject config = config();
+        logger.info("Start Vertx Todo List");
+        logger.info("with config:\n {}", config.encodePrettily());
+
         CompositeFuture.all(
-                initDb(config()),
-                deploy(WebVerticle.class),
-                deploy(DataStoreVerticle.class))
+                initDb(config),
+                deploy(WebVerticle.class, config),
+                deploy(DataStoreVerticle.class, config))
                 .setHandler(result -> {
                     if (result.succeeded()) {
                         startFuture.complete();
@@ -35,9 +38,9 @@ public class Todo extends AbstractVerticle {
         stopFuture.complete();
     }
 
-    private Future<Void> deploy(Class<? extends Verticle> verticle) {
+    private Future<Void> deploy(final Class<? extends Verticle> verticle, final JsonObject config) {
         final Future<Void> done = Future.future();
-        getVertx().deployVerticle(verticle, new DeploymentOptions(), result -> {
+        getVertx().deployVerticle(verticle, new DeploymentOptions().setConfig(config), result -> {
             if (result.succeeded()) {
                 done.complete();
             } else {
