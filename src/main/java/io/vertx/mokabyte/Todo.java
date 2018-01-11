@@ -73,7 +73,11 @@ public class Todo extends AbstractVerticle {
     }
 
     public static void main(String[] args) {
-        Launcher.executeCommand("run", Todo.class.getName(), args[0], args[1]);
+        if (null != args && 2 == args.length) {
+            Launcher.executeCommand("run", Todo.class.getName(), args[0], args[1]);
+        } else {
+            Launcher.executeCommand("run");
+        }
     }
 
 }
