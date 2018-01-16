@@ -8,11 +8,8 @@ import io.vertx.mokabyte.serializer.LocalDateSerializer;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class TodoModel implements Serializable {
-
-    private static final AtomicLong SEQ_TODO_ID = new AtomicLong();
 
     private final Long id;
 
@@ -22,9 +19,8 @@ public class TodoModel implements Serializable {
 
     private LocalDateTime creationDate;
 
-    public TodoModel() {
-        this.id = SEQ_TODO_ID.getAndIncrement();
-        this.creationDate = LocalDateTime.now();
+    public TodoModel(Long id)  {
+        this.id = id;
     }
 
     public Long getId() {

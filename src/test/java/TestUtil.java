@@ -4,14 +4,14 @@ import io.vertx.mokabyte.model.UserModel;
 public class TestUtil {
 
     public static TodoModel createTestModel() {
-        final UserModel userModel = new UserModel();
+        final UserModel userModel = new UserModel(1L);
         userModel.setName("Marco");
         userModel.setSurname("Rotondi");
         userModel.setEmail("email@email.it");
         userModel.setUsername("mrc");
         userModel.setPassword("secret");
 
-        final TodoModel todoModel = new TodoModel();
+        final TodoModel todoModel = new TodoModel(1L);
         todoModel.setTodoText("Appointment with All");
         todoModel.setUser(userModel);
 
