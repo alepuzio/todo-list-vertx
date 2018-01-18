@@ -11,7 +11,7 @@ public class TestUtil {
         userModel.setUsername("mrc");
         userModel.setPassword("secret");
 
-        final TodoModel todoModel = new TodoModel(1L);
+        final TodoModel todoModel = new TodoModel(null);
         todoModel.setTodoText("Appointment with All");
         todoModel.setUser(userModel);
 

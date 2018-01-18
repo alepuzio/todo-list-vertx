@@ -24,6 +24,10 @@ public class Todo extends AbstractVerticle {
                 deploy(DataStoreVerticle.class, config))
                 .setHandler(result -> {
                     if (result.succeeded()) {
+                        // Here we are waiting for uncaught exception
+                        vertx.exceptionHandler(e -> {
+                            logger.error("An error found: {}", e.getMessage(), e);
+                        });
                         startFuture.complete();
                     } else {
                         startFuture.fail(result.cause());

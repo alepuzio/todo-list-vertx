@@ -1,6 +1,9 @@
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.mokabyte.datastore.DataSourceConfig;
@@ -27,7 +30,7 @@ public class TodoDataStoreVerticleTestCase {
     public static void init(final TestContext context) {
         final JsonObject properties = new JsonObject();
         properties.put("datasource.driver", "org.h2.Driver");
-        properties.put("datasource.url", "jdbc:h2:mem:todoDb");
+        properties.put("datasource.url", "jdbc:h2:mem:todoDb;DB_CLOSE_DELAY=-1");
         properties.put("datasource.user", "sa");
         properties.put("datasource.password", "");
 
@@ -52,8 +55,19 @@ public class TodoDataStoreVerticleTestCase {
     }
 
     @Test
-    public void createNewContent() {
-
+    public void createNewContent(final TestContext context) {
+        final Async async = context.async();
+        vertx.eventBus().send("todo.create", Json.encodePrettily(todoModel),response -> {
+            if (response.succeeded()) {
+                context.assertNotNull(response.result());
+                final Message<Object> returnMessage = response.result();
+                context.assertTrue(returnMessage.body() instanceof Long);
+                context.assertEquals(1L, returnMessage.body());
+                async.complete();
+            } else {
+                context.fail(response.cause());
+            }
+        });
     }
 
     @Test

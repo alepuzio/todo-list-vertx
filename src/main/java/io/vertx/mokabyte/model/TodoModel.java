@@ -19,6 +19,10 @@ public class TodoModel implements Serializable {
 
     private LocalDateTime creationDate;
 
+    public TodoModel() {
+        this.id = null;
+    }
+
     public TodoModel(Long id)  {
         this.id = id;
     }

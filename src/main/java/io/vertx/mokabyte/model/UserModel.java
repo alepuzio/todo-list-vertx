@@ -25,6 +25,10 @@ public class UserModel implements Serializable {
 
     private LocalDateTime creationDate;
 
+    public UserModel() {
+        this.id = null;
+    }
+
     public UserModel(Long id) {
         this.id = id;
     }
