@@ -61,18 +61,18 @@ public class DataStoreVerticle extends AbstractVerticle {
 
     private void findAll(final Message<Object> message, final SQLConnection connection) {
         if (Objects.nonNull(message)) {
-            connection.query("SELECT t.id, t.content, t.creation_date, u.id, " +
-                    "u.username, u.password, u.name, u.surname, u.email, u.creation_time from todo t join user u" +
-                    " on (u.id = t.id) order by id desc", sqlResult -> {
+            connection.query("SELECT t.id as T_ID, t.content as T_CONTENT, t.creation_date AS T_CREATION, " +
+                    "u.id as U_ID, u.username as U_USER, u.password as U_PWD, u.name as U_NAME, u.surname as U_SNAME, " +
+                    "u.email as U_EMAIL, u.creation_date as U_CREATION from todo t join user u" +
+                    " on (u.id = t.id) order by t.id desc", sqlResult -> {
 
                 if (sqlResult.succeeded()) {
-                    final List<TodoModel> todos = fillTodoModel(sqlResult);
-                    message.reply(Json.encodePrettily(todos));
+                    message.reply(Json.encode(fillTodoModel(sqlResult)));
                 } else {
                     logger.error("Error to execute query findAll: {}", sqlResult.cause().getMessage());
                     final Error error = new Error("Error on query findAll", sqlResult.cause().getMessage());
 
-                    message.reply(Json.encodePrettily(error));
+                    message.reply(Json.encode(error));
                 }
             });
         }
@@ -82,18 +82,19 @@ public class DataStoreVerticle extends AbstractVerticle {
         if (Objects.nonNull(message) && Objects.nonNull(message.body())) {
             final JsonArray jsonParam = new JsonArray().add((Long) message.body());
 
-            connection.queryWithParams("SELECT t.id, t.content, t.creation_date, u.id, " +
-                    "u.username, u.password, u.name, u.surname, u.email, u.creation_time from todo t join user u" +
-                    " on (u.id = t.id) WHERE t.id = ? order by id desc", jsonParam,  sqlResult -> {
+            connection.queryWithParams( "SELECT t.id as T_ID, t.content as T_CONTENT, t.creation_date AS T_CREATION, " +
+                    "u.id as U_ID, u.username as U_USER, u.password as U_PWD, u.name as U_NAME, u.surname as U_SNAME, " +
+                    "u.email as U_EMAIL, u.creation_date as U_CREATION from todo t join user u" +
+                    " on (u.id = t.id) WHERE t.id = ? order by t.id desc", jsonParam,  sqlResult -> {
 
                 if (sqlResult.succeeded()) {
-                    final List<TodoModel> todos = fillTodoModel(sqlResult);
-                    message.reply(Json.encodePrettily(todos.get(0)));
+                    final List<TodoModel> todoList = fillTodoModel(sqlResult);
+                    message.reply(Json.encode(todoList.get(0)));
                 } else {
                     logger.error("Error to execute query findAll: {}", sqlResult.cause().getMessage());
                     final Error error = new Error("Error on query findAll", sqlResult.cause().getMessage());
 
-                    message.reply(Json.encodePrettily(error));
+                    message.reply(Json.encode(error));
                 }
             });
         }
@@ -121,7 +122,7 @@ public class DataStoreVerticle extends AbstractVerticle {
 
     private void updateTodo(final Message<Object> message, final SQLConnection connection) {
         if (Objects.nonNull(message) && Objects.nonNull(message.body())) {
-            final TodoModel todo = (TodoModel) message.body();
+            final TodoModel todo = Json.decodeValue(message.body().toString(), TodoModel.class);
             final JsonArray todoParam = new JsonArray()
                 .add(todo.getTodoText())
                 .add( todo.getId() );
@@ -164,17 +165,17 @@ public class DataStoreVerticle extends AbstractVerticle {
         final List<TodoModel> todos = new LinkedList<>();
 
         for (JsonObject row : resultSet.getRows()) {
-            final TodoModel todo = new TodoModel(row.getLong("T.ID"));
-            todo.setTodoText(row.getString("T.CONTENT"));
-            todo.setCreationDate(LocalDateTime.ofInstant(row.getInstant("T.CREATION_TIME"), ZoneOffset.UTC));
+            final TodoModel todo = new TodoModel(row.getLong("T_ID"));
+            todo.setTodoText(row.getString("T_CONTENT"));
+            todo.setCreationDate(LocalDateTime.ofInstant(row.getInstant("T_CREATION"), ZoneOffset.UTC));
 
-            todo.setUser(new UserModel(row.getLong("U.ID")));
-            todo.getUser().setUsername(row.getString("U.USERNAME"));
-            todo.getUser().setPassword(row.getString("U.PASSWORD"));
-            todo.getUser().setName(row.getString("U.NAME"));
-            todo.getUser().setSurname(row.getString("U.SURNAME"));
-            todo.getUser().setEmail(row.getString("U.EMAIL"));
-            todo.getUser().setCreationDate(LocalDateTime.ofInstant(row.getInstant("U.CREATION_TIME"), ZoneOffset.UTC));
+            todo.setUser(new UserModel(row.getLong("U_ID")));
+            todo.getUser().setUsername(row.getString("U_USER"));
+            todo.getUser().setPassword(row.getString("U_PWD"));
+            todo.getUser().setName(row.getString("U_NAME"));
+            todo.getUser().setSurname(row.getString("U_SNAME"));
+            todo.getUser().setEmail(row.getString("U_EMAIL"));
+            todo.getUser().setCreationDate(LocalDateTime.ofInstant(row.getInstant("U_CREATION"), ZoneOffset.UTC));
 
             todos.add(todo);
         }

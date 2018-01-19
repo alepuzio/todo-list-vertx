@@ -14,8 +14,6 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
-import javax.sql.DataSource;
-
 @RunWith(VertxUnitRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TodoDataStoreVerticleTestCase {
@@ -23,8 +21,6 @@ public class TodoDataStoreVerticleTestCase {
     private static Vertx vertx;
 
     private TodoModel todoModel;
-
-    private DataSource dataSource = null;
 
     @BeforeClass
     public static void init(final TestContext context) {
@@ -57,9 +53,10 @@ public class TodoDataStoreVerticleTestCase {
     @Test
     public void createNewContent(final TestContext context) {
         final Async async = context.async();
-        vertx.eventBus().send("todo.create", Json.encodePrettily(todoModel),response -> {
+        vertx.eventBus().send("todo.create", Json.encode(todoModel), response -> {
             if (response.succeeded()) {
                 context.assertNotNull(response.result());
+                context.assertNotNull(response.result().body());
                 final Message<Object> returnMessage = response.result();
                 context.assertTrue(returnMessage.body() instanceof Long);
                 context.assertEquals(1L, returnMessage.body());
@@ -71,18 +68,56 @@ public class TodoDataStoreVerticleTestCase {
     }
 
     @Test
-    public void readContent() {
-
+    public void readContent(final TestContext context) {
+        final Async async = context.async();
+        vertx.eventBus().send("todo.find.todo", 1L, response -> {
+            if (response.succeeded()) {
+                context.assertNotNull(response.result());
+                context.assertNotNull(response.result().body());
+                final TodoModel foundTodo = Json.decodeValue(response.result().body().toString(), TodoModel.class);
+                context.assertEquals(1L, foundTodo.getId());
+                async.complete();
+            } else {
+                context.fail(response.cause());
+            }
+        });
     }
 
     @Test
-    public void readAllContent() {
-
+    public void readAllContent(final TestContext context) {
+        final Async async = context.async();
+        vertx.eventBus().send("todo.find.all", "_ALL_", response -> {
+            if (response.succeeded()) {
+                context.assertNotNull(response.result());
+                context.assertNotNull(response.result().body());
+                final TodoModel[] founds = Json.decodeValue(response.result().body().toString(), TodoModel[].class);
+                context.assertNotNull(founds);
+                context.assertTrue(founds.length > 0);
+                async.complete();
+            } else {
+                context.fail(response.cause());
+            }
+        });
     }
 
     @Test
-    public void updateContent() {
+    public void updateContent(final TestContext context) {
+        final Async async = context.async();
+        final TodoModel updateTodo = TestUtil.createTestModel();
+        context.assertEquals(todoModel.getTodoText(), updateTodo.getTodoText());
 
+        updateTodo.setTodoText("Change Text Todo");
+
+        vertx.eventBus().send("todo.update", Json.encode(updateTodo), response -> {
+            if (response.succeeded()) {
+                context.assertNotNull(response.result());
+                context.assertNotNull(response.result().body());
+                context.assertEquals(1L, response.result().body());
+                async.complete();
+            } else {
+                context.fail(response.cause());
+            }
+        });
     }
 
     @Test
