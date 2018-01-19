@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class UserModel implements Serializable {
 
-    private final Long id;
+    private Long id;
 
     private String username;
 
@@ -26,7 +26,7 @@ public class UserModel implements Serializable {
     private LocalDateTime creationDate;
 
     public UserModel() {
-        this.id = null;
+
     }
 
     public UserModel(Long id) {
@@ -35,6 +35,10 @@ public class UserModel implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {

@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class TodoModel implements Serializable {
 
-    private final Long id;
+    private Long id;
 
     private String todoText;
 
@@ -20,7 +20,7 @@ public class TodoModel implements Serializable {
     private LocalDateTime creationDate;
 
     public TodoModel() {
-        this.id = null;
+
     }
 
     public TodoModel(Long id)  {
@@ -29,6 +29,10 @@ public class TodoModel implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTodoText() {
