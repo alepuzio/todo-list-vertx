@@ -130,7 +130,7 @@ public class DataStoreVerticle extends AbstractVerticle {
                 connection.updateWithParams("UPDATE todo set content = ? WHERE user_id = ?",
                     todoParam, updTodoResult -> {
                         if (updTodoResult.succeeded()) {
-                            message.reply(updTodoResult.result().getKeys().getLong(0));
+                            message.reply(updTodoResult.result().getUpdated());
                         } else {
                             logger.error("Error to execute query updateTodo Todo: {}", updTodoResult.cause().getMessage());
                             final Error error = new Error("Error on query updateTodo Todo", updTodoResult.cause().getMessage());

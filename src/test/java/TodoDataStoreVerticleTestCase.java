@@ -105,15 +105,26 @@ public class TodoDataStoreVerticleTestCase {
         final Async async = context.async();
         final TodoModel updateTodo = TestUtil.createTestModel();
         context.assertEquals(todoModel.getTodoText(), updateTodo.getTodoText());
-
+        updateTodo.setId(1L);
         updateTodo.setTodoText("Change Text Todo");
 
         vertx.eventBus().send("todo.update", Json.encode(updateTodo), response -> {
             if (response.succeeded()) {
                 context.assertNotNull(response.result());
                 context.assertNotNull(response.result().body());
-                context.assertEquals(1L, response.result().body());
-                async.complete();
+                context.assertEquals(1, response.result().body());
+
+                vertx.eventBus().send("todo.find.todo", 1L, loadResponse -> {
+                    if (loadResponse.succeeded()) {
+                        context.assertNotNull(loadResponse.result());
+                        context.assertNotNull(loadResponse.result().body());
+                        final TodoModel foundTodo = Json.decodeValue(loadResponse.result().body().toString(), TodoModel.class);
+                        context.assertEquals(updateTodo.getTodoText(), foundTodo.getTodoText());
+                        async.complete();
+                    } else {
+                        context.fail(loadResponse.cause());
+                    }
+                });
             } else {
                 context.fail(response.cause());
             }
@@ -121,8 +132,31 @@ public class TodoDataStoreVerticleTestCase {
     }
 
     @Test
-    public void whenIsLastCallDelete() {
+    public void whenIsLastCallDelete(final TestContext context) {
+        final Async async = context.async();
 
+        vertx.eventBus().send("todo.delete", 1L, response -> {
+            if (response.succeeded()) {
+                context.assertNotNull(response.result());
+                context.assertNotNull(response.result().body());
+                context.assertEquals(true, response.result().body());
+
+                vertx.eventBus().send("todo.find.all", "_ALL_", loadResponse -> {
+                    if (loadResponse.succeeded()) {
+                        context.assertNotNull(loadResponse.result());
+                        context.assertNotNull(loadResponse.result().body());
+                        final TodoModel[] founds = Json.decodeValue(loadResponse.result().body().toString(), TodoModel[].class);
+                        context.assertNotNull(founds);
+                        context.assertTrue(founds.length == 0);
+                        async.complete();
+                    } else {
+                        context.fail(loadResponse.cause());
+                    }
+                });
+            } else {
+                context.fail(response.cause());
+            }
+        });
     }
 
     @AfterClass
