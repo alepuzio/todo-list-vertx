@@ -8,13 +8,10 @@ import io.vertx.mokabyte.serializer.LocalDateSerializer;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class UserModel implements Serializable {
 
-    private static final AtomicLong SEQ_USER_ID = new AtomicLong();
-
-    private final Long id;
+    private Long id;
 
     private String username;
 
@@ -29,12 +26,19 @@ public class UserModel implements Serializable {
     private LocalDateTime creationDate;
 
     public UserModel() {
-        this.id = SEQ_USER_ID.getAndIncrement();
-        this.creationDate = LocalDateTime.now();
+
+    }
+
+    public UserModel(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {

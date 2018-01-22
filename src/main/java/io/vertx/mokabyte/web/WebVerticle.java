@@ -43,11 +43,11 @@ public class WebVerticle extends AbstractVerticle {
                 .listen(HTTP_PORT, accepted -> {
                     if (accepted.succeeded()) {
                         webFuture.complete();
+                        logger.info("Successful start WebServer on port: {}", HTTP_PORT);
                     } else {
                         webFuture.fail(accepted.cause());
                     }
                 });
-        logger.info("Successful start WebServer on port: {}", HTTP_PORT);
     }
 
     @Override
