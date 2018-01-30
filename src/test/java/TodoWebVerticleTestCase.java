@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.mokabyte.datastore.DataStoreVerticle;
 import io.vertx.mokabyte.model.TodoModel;
 import io.vertx.mokabyte.web.WebVerticle;
 import org.junit.*;
@@ -27,8 +28,10 @@ public class TodoWebVerticleTestCase {
         vertx = Vertx.vertx();
         final DeploymentOptions options = new DeploymentOptions()
                 .setConfig(new JsonObject().put("http.port", HTTP_PORT));
+
         // We pass the options as the second parameter of the deployVerticle method.
         vertx.deployVerticle(WebVerticle.class.getName(), options, context.asyncAssertSuccess());
+        vertx.deployVerticle(DataStoreVerticle.class.getName(), context.asyncAssertFailure());
     }
 
     @Before

@@ -2,6 +2,7 @@ package io.vertx.mokabyte.web;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -13,15 +14,11 @@ import io.vertx.mokabyte.model.TodoModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class WebVerticle extends AbstractVerticle {
     private static final Logger logger = LoggerFactory.getLogger(WebVerticle.class);
     private static final int HTTP_PORT = 9000;
-
-    private final Map<Long, TodoModel> todoModelList = new HashMap<>();
 
     @Override
     public void start(final Future<Void> webFuture) {
@@ -56,9 +53,16 @@ public class WebVerticle extends AbstractVerticle {
     }
 
     private void getAll(final RoutingContext routingContext) {
-        routingContext.response()
-                .putHeader("content-type", "application/json; charset=utf-8")
-                .end(Json.encodePrettily(todoModelList.values()));
+        vertx.eventBus().send("todo.find.all", "_ALL_", response -> {
+            if (response.succeeded()) {
+                final TodoModel[] founds = Json.decodeValue(response.result().body().toString(), TodoModel[].class);
+                routingContext.response()
+                        .putHeader("content-type", "application/json; charset=utf-8")
+                        .end(Json.encodePrettily(founds));
+            } else {
+                routingContext.response().setStatusCode(500).end();
+            }
+        });
     }
 
     private void getTodoItem(final RoutingContext routingContext) {
@@ -66,30 +70,43 @@ public class WebVerticle extends AbstractVerticle {
         if (Objects.isNull(id)) {
             routingContext.response().setStatusCode(400).end();
         } else {
-            final Long todoId = Long.valueOf(id);
-            final TodoModel todo = todoModelList.get(todoId);
-
-            if (Objects.isNull(todo)) {
-                routingContext.response().setStatusCode(404).end();
-            } else {
-                routingContext.response()
-                        .putHeader("content-type", "application/json; charset=utf-8")
-                        .end(Json.encodePrettily(todo));
-            }
+            vertx.eventBus().send("todo.find.todo", id, response -> {
+                if (response.succeeded()) {
+                    final TodoModel foundTodo = Json.decodeValue(response.result().body().toString(), TodoModel.class);
+                    if (Objects.isNull(foundTodo)) {
+                        routingContext.response().setStatusCode(404).end();
+                    } else {
+                        routingContext.response()
+                                .putHeader("content-type", "application/json; charset=utf-8")
+                                .end(Json.encodePrettily(foundTodo));
+                    }
+                } else {
+                    routingContext.response().setStatusCode(500).end();
+                }
+            });
         }
     }
 
     private void createTodoItem(final RoutingContext routingContext) {
         // Read the request's content and create an instance of Whisky.
         final TodoModel todo = Json.decodeValue(routingContext.getBodyAsString(), TodoModel.class);
-        // Add it to the backend map
-        todoModelList.put(todo.getId(), todo);
 
-        // Return the created whisky as JSON
-        routingContext.response()
-                .setStatusCode(201)
-                .putHeader("content-type", "application/json; charset=utf-8")
-                .end(Json.encodePrettily(todo));
+        vertx.eventBus().send("todo.create", Json.encode(todo), response -> {
+            if (response.succeeded()) {
+                final Message<Object> returnMessage = response.result();
+                if (returnMessage.body() instanceof Long) {
+                    todo.setId((Long) returnMessage.body());
+                    routingContext.response()
+                            .setStatusCode(201)
+                            .putHeader("content-type", "application/json; charset=utf-8")
+                            .end(Json.encodePrettily(todo));
+                } else {
+                    routingContext.response().setStatusCode(500).end();
+                }
+            } else {
+                routingContext.response().setStatusCode(500).end();
+            }
+        });
     }
 
     private void updateTodoItem(final RoutingContext routingContext) {
@@ -99,6 +116,9 @@ public class WebVerticle extends AbstractVerticle {
         if (Objects.isNull(id) || Objects.isNull(json)) {
             routingContext.response().setStatusCode(400).end();
         } else {
+            // TODO Update
+
+            /*
             final Long todoId = Long.valueOf(id);
             final TodoModel todo = todoModelList.get(todoId);
 
@@ -110,6 +130,7 @@ public class WebVerticle extends AbstractVerticle {
                         .putHeader("content-type", "application/json; charset=utf-8")
                         .end(Json.encodePrettily(todo));
             }
+            */
         }
     }
 
@@ -118,8 +139,7 @@ public class WebVerticle extends AbstractVerticle {
         if (Objects.isNull(id)) {
             routingContext.response().setStatusCode(400).end();
         } else {
-            final Long todoId = Long.valueOf(id);
-            todoModelList.remove(todoId);
+            // TODO Delete
         }
 
         routingContext.response().setStatusCode(204).end();
