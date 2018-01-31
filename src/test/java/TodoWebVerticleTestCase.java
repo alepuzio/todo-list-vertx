@@ -5,9 +5,11 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.mokabyte.datastore.DataSourceConfig;
 import io.vertx.mokabyte.datastore.DataStoreVerticle;
 import io.vertx.mokabyte.model.TodoModel;
 import io.vertx.mokabyte.web.WebVerticle;
+import org.flywaydb.core.Flyway;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -26,12 +28,28 @@ public class TodoWebVerticleTestCase {
     @BeforeClass
     public static void init(final TestContext context) {
         vertx = Vertx.vertx();
+
+        final JsonObject properties = new JsonObject();
+        properties.put("datasource.driver", "org.h2.Driver");
+        properties.put("datasource.url", "jdbc:h2:mem:todoDb;DB_CLOSE_DELAY=-1");
+        properties.put("datasource.user", "sa");
+        properties.put("datasource.password", "");
+        properties.put("http.port", HTTP_PORT);
+
         final DeploymentOptions options = new DeploymentOptions()
-                .setConfig(new JsonObject().put("http.port", HTTP_PORT));
+                .setConfig(properties);
+
+        initDB(properties);
 
         // We pass the options as the second parameter of the deployVerticle method.
         vertx.deployVerticle(WebVerticle.class.getName(), options, context.asyncAssertSuccess());
-        vertx.deployVerticle(DataStoreVerticle.class.getName(), context.asyncAssertFailure());
+        vertx.deployVerticle(DataStoreVerticle.class.getName(), options, context.asyncAssertSuccess());
+    }
+
+    private static void initDB(JsonObject properties) {
+        final Flyway flyway = new Flyway();
+        flyway.setDataSource(DataSourceConfig.initDataSource(properties));
+        flyway.migrate();
     }
 
     @Before

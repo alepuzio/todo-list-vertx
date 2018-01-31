@@ -5,7 +5,6 @@ import io.vertx.core.Future;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -70,7 +69,7 @@ public class WebVerticle extends AbstractVerticle {
         if (Objects.isNull(id)) {
             routingContext.response().setStatusCode(400).end();
         } else {
-            vertx.eventBus().send("todo.find.todo", id, response -> {
+            vertx.eventBus().send("todo.find.todo", Long.valueOf(id), response -> {
                 if (response.succeeded()) {
                     final TodoModel foundTodo = Json.decodeValue(response.result().body().toString(), TodoModel.class);
                     if (Objects.isNull(foundTodo)) {
@@ -111,26 +110,30 @@ public class WebVerticle extends AbstractVerticle {
 
     private void updateTodoItem(final RoutingContext routingContext) {
         final String id = routingContext.request().getParam("id");
-        final JsonObject json = routingContext.getBodyAsJson();
+        final TodoModel updateTodo = Json.decodeValue(routingContext.getBodyAsString(), TodoModel.class);
+        if (Objects.isNull(updateTodo.getId())) {
+            updateTodo.setId(Long.valueOf(id));
+        }
 
-        if (Objects.isNull(id) || Objects.isNull(json)) {
+        if (Objects.isNull(id) || Objects.isNull(updateTodo)) {
             routingContext.response().setStatusCode(400).end();
         } else {
-            // TODO Update
-
-            /*
-            final Long todoId = Long.valueOf(id);
-            final TodoModel todo = todoModelList.get(todoId);
-
-            if (Objects.isNull(todo)) {
-                routingContext.response().setStatusCode(404).end();
-            } else {
-                todo.setTodoText(json.getString("todoText"));
-                routingContext.response()
-                        .putHeader("content-type", "application/json; charset=utf-8")
-                        .end(Json.encodePrettily(todo));
-            }
-            */
+            vertx.eventBus().send("todo.update", Json.encode(updateTodo), response -> {
+                if (response.succeeded()) {
+                    vertx.eventBus().send("todo.find.todo", Long.valueOf(id), loadResponse -> {
+                        if (loadResponse.succeeded()) {
+                            final TodoModel foundTodo = Json.decodeValue(loadResponse.result().body().toString(), TodoModel.class);
+                            routingContext.response()
+                                    .putHeader("content-type", "application/json; charset=utf-8")
+                                    .end(Json.encodePrettily(foundTodo));
+                        } else {
+                            routingContext.response().setStatusCode(500).end();
+                        }
+                    });
+                } else {
+                    routingContext.response().setStatusCode(500).end();
+                }
+            });
         }
     }
 
@@ -139,10 +142,14 @@ public class WebVerticle extends AbstractVerticle {
         if (Objects.isNull(id)) {
             routingContext.response().setStatusCode(400).end();
         } else {
-            // TODO Delete
+            vertx.eventBus().send("todo.delete", 1L, response -> {
+                if (response.succeeded()) {
+                    routingContext.response().setStatusCode(204).end();
+                } else {
+                    routingContext.response().setStatusCode(500).end();
+                }
+            });
         }
-
-        routingContext.response().setStatusCode(204).end();
     }
 
 }
