@@ -4,11 +4,13 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
+import io.vertx.mokabyte.model.Error;
 import io.vertx.mokabyte.model.TodoModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +56,15 @@ public class WebVerticle extends AbstractVerticle {
     private void getAll(final RoutingContext routingContext) {
         vertx.eventBus().send("todo.find.all", "_ALL_", response -> {
             if (response.succeeded()) {
-                final TodoModel[] founds = Json.decodeValue(response.result().body().toString(), TodoModel[].class);
-                routingContext.response()
-                        .putHeader("content-type", "application/json; charset=utf-8")
-                        .end(Json.encodePrettily(founds));
+                try {
+                    final TodoModel[] founds = Json.decodeValue(response.result().body().toString(), TodoModel[].class);
+                    routingContext.response()
+                            .putHeader("content-type", "application/json; charset=utf-8")
+                            .end(Json.encodePrettily(founds));
+                } catch (DecodeException de) {
+                    final Error error = Json.decodeValue(response.result().body().toString(), Error.class);
+                    routingContext.response().setStatusCode(500).end(Json.encodePrettily(error));
+                }
             } else {
                 routingContext.response().setStatusCode(500).end();
             }
@@ -71,13 +78,14 @@ public class WebVerticle extends AbstractVerticle {
         } else {
             vertx.eventBus().send("todo.find.todo", Long.valueOf(id), response -> {
                 if (response.succeeded()) {
-                    final TodoModel foundTodo = Json.decodeValue(response.result().body().toString(), TodoModel.class);
-                    if (Objects.isNull(foundTodo)) {
-                        routingContext.response().setStatusCode(404).end();
-                    } else {
+                    try {
+                        final TodoModel foundTodo = Json.decodeValue(response.result().body().toString(), TodoModel.class);
                         routingContext.response()
-                                .putHeader("content-type", "application/json; charset=utf-8")
-                                .end(Json.encodePrettily(foundTodo));
+                                    .putHeader("content-type", "application/json; charset=utf-8")
+                                    .end(Json.encodePrettily(foundTodo));
+                    } catch (DecodeException de) {
+                        final Error error = Json.decodeValue(response.result().body().toString(), Error.class);
+                        routingContext.response().setStatusCode(500).end(Json.encodePrettily(error));
                     }
                 } else {
                     routingContext.response().setStatusCode(500).end();

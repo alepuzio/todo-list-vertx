@@ -2,9 +2,12 @@ package io.vertx.mokabyte.model;
 
 public class Error {
 
-    private final String message;
+    private String message;
 
-    private final String detailMessage;
+    private String detailMessage;
+
+    public Error() {
+    }
 
     public Error(String message, String detailMessage) {
         this.message = message;
@@ -15,7 +18,15 @@ public class Error {
         return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public String getDetailMessage() {
         return detailMessage;
+    }
+
+    public void setDetailMessage(String detailMessage) {
+        this.detailMessage = detailMessage;
     }
 }

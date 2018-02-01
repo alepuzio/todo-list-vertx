@@ -89,7 +89,11 @@ public class DataStoreVerticle extends AbstractVerticle {
 
                 if (sqlResult.succeeded()) {
                     final List<TodoModel> todoList = fillTodoModel(sqlResult);
-                    message.reply(Json.encode(todoList.get(0)));
+                    if (!todoList.isEmpty()) {
+                        message.reply(Json.encode(todoList.get(0)));
+                    } else {
+                        message.reply(Json.encode(new Error("Item Not Found", "Item not Found on DB")));
+                    }
                 } else {
                     logger.error("Error to execute query findAll: {}", sqlResult.cause().getMessage());
                     final Error error = new Error("Error on query findAll", sqlResult.cause().getMessage());
