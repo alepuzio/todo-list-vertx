@@ -83,7 +83,7 @@ public class TodoWebVerticleTestCase {
                 .putHeader("content-type", "application/json")
                 .putHeader("content-length", bodyLength)
                 .handler(response -> {
-                    context.assertEquals(response.statusCode(), 201);
+                    context.assertEquals(response.statusCode(), 200);
                     context.assertTrue(response.headers().get("content-type").contains("application/json"));
                     response.bodyHandler(body -> {
                         final TodoModel todo = Json.decodeValue(body.toString(), TodoModel.class);
@@ -161,7 +161,7 @@ public class TodoWebVerticleTestCase {
 
         vertx.createHttpClient().delete(HTTP_PORT, "localhost", "/api/todo/1")
                 .handler(response -> {
-                    context.assertEquals(response.statusCode(), 204);
+                    context.assertEquals(response.statusCode(), 200);
                     async.complete();
                 })
                 .end();
