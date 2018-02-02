@@ -64,7 +64,7 @@ public class DataStoreVerticle extends AbstractVerticle {
             connection.query("SELECT t.id as T_ID, t.content as T_CONTENT, t.creation_date AS T_CREATION, " +
                     "u.id as U_ID, u.username as U_USER, u.password as U_PWD, u.name as U_NAME, u.surname as U_SNAME, " +
                     "u.email as U_EMAIL, u.creation_date as U_CREATION from todo t join user u" +
-                    " on (u.id = t.id) order by t.id desc", sqlResult -> {
+                    " on (u.id = t.user_id) order by t.id desc", sqlResult -> {
 
                 if (sqlResult.succeeded()) {
                     message.reply(Json.encode(fillTodoModel(sqlResult)));
@@ -85,7 +85,7 @@ public class DataStoreVerticle extends AbstractVerticle {
             connection.queryWithParams( "SELECT t.id as T_ID, t.content as T_CONTENT, t.creation_date AS T_CREATION, " +
                     "u.id as U_ID, u.username as U_USER, u.password as U_PWD, u.name as U_NAME, u.surname as U_SNAME, " +
                     "u.email as U_EMAIL, u.creation_date as U_CREATION from todo t join user u" +
-                    " on (u.id = t.id) WHERE t.id = ? order by t.id desc", jsonParam,  sqlResult -> {
+                    " on (u.id = t.user_id) WHERE t.id = ? order by t.id desc", jsonParam,  sqlResult -> {
 
                 if (sqlResult.succeeded()) {
                     final List<TodoModel> todoList = fillTodoModel(sqlResult);
@@ -128,10 +128,10 @@ public class DataStoreVerticle extends AbstractVerticle {
         if (Objects.nonNull(message) && Objects.nonNull(message.body())) {
             final TodoModel todo = Json.decodeValue(message.body().toString(), TodoModel.class);
             final JsonArray todoParam = new JsonArray()
-                .add(todo.getTodoText())
+                .add( todo.getTodoText() )
                 .add( todo.getId() );
 
-                connection.updateWithParams("UPDATE todo set content = ? WHERE user_id = ?",
+                connection.updateWithParams("UPDATE todo set content = ? WHERE id = ?",
                     todoParam, updTodoResult -> {
                         if (updTodoResult.succeeded()) {
                             message.reply(updTodoResult.result().getUpdated());

@@ -77,9 +77,7 @@ public class WebVerticle extends AbstractVerticle {
         if (Objects.isNull(id)) {
             routingContext.response().setStatusCode(400).end();
         } else {
-            vertx.eventBus().send("todo.find.todo", Long.valueOf(id), response -> {
-                parseSearchResult(routingContext, response, response);
-            });
+            vertx.eventBus().send("todo.find.todo", Long.valueOf(id), loadResponse -> parseSearchResult(routingContext, loadResponse));
         }
     }
 
@@ -91,11 +89,7 @@ public class WebVerticle extends AbstractVerticle {
             if (response.succeeded()) {
                 final Message<Object> returnMessage = response.result();
                 if (returnMessage.body() instanceof Long) {
-                    todo.setId((Long) returnMessage.body());
-                    routingContext.response()
-                            .setStatusCode(201)
-                            .putHeader("content-type", "application/json; charset=utf-8")
-                            .end(Json.encodePrettily(todo));
+                    vertx.eventBus().send("todo.find.todo", returnMessage.body(), loadResponse -> parseSearchResult(routingContext, loadResponse));
                 } else {
                     final Error error = Json.decodeValue(response.result().body().toString(), Error.class);
                     routingContext.response().setStatusCode(500).end(Json.encodePrettily(error));
@@ -118,9 +112,7 @@ public class WebVerticle extends AbstractVerticle {
         } else {
             vertx.eventBus().send("todo.update", Json.encode(updateTodo), response -> {
                 if (response.succeeded()) {
-                    vertx.eventBus().send("todo.find.todo", Long.valueOf(id), loadResponse -> {
-                        parseSearchResult(routingContext, response, loadResponse);
-                    });
+                    vertx.eventBus().send("todo.find.todo", Long.valueOf(id), loadResponse -> parseSearchResult(routingContext, loadResponse));
                 } else {
                     routingContext.response().setStatusCode(500).end();
                 }
@@ -128,7 +120,7 @@ public class WebVerticle extends AbstractVerticle {
         }
     }
 
-    private void parseSearchResult(RoutingContext routingContext, AsyncResult<Message<Object>> response, AsyncResult<Message<Object>> loadResponse) {
+    private void parseSearchResult(RoutingContext routingContext, AsyncResult<Message<Object>> loadResponse) {
         if (loadResponse.succeeded()) {
             try {
                 final TodoModel foundTodo = Json.decodeValue(loadResponse.result().body().toString(), TodoModel.class);
@@ -136,7 +128,7 @@ public class WebVerticle extends AbstractVerticle {
                         .putHeader("content-type", "application/json; charset=utf-8")
                         .end(Json.encodePrettily(foundTodo));
             } catch (DecodeException de) {
-                final Error error = Json.decodeValue(response.result().body().toString(), Error.class);
+                final Error error = Json.decodeValue(loadResponse.result().body().toString(), Error.class);
                 routingContext.response().setStatusCode(500).end(Json.encodePrettily(error));
             }
         } else {
@@ -149,9 +141,9 @@ public class WebVerticle extends AbstractVerticle {
         if (Objects.isNull(id)) {
             routingContext.response().setStatusCode(400).end();
         } else {
-            vertx.eventBus().send("todo.delete", 1L, response -> {
+            vertx.eventBus().send("todo.delete", Long.valueOf(id), response -> {
                 if (response.succeeded()) {
-                    routingContext.response().setStatusCode(204).end();
+                    routingContext.response().setStatusCode(200).end();
                 } else {
                     final Error error = Json.decodeValue(response.result().body().toString(), Error.class);
                     routingContext.response().setStatusCode(500).end(Json.encodePrettily(error));
