@@ -67,6 +67,7 @@ public class WebVerticle extends AbstractVerticle {
                     routingContext.response().setStatusCode(500).end(Json.encodePrettily(error));
                 }
             } else {
+                logger.error("Load Response error: {}", response.cause());
                 routingContext.response().setStatusCode(500).end();
             }
         });
@@ -95,6 +96,7 @@ public class WebVerticle extends AbstractVerticle {
                     routingContext.response().setStatusCode(500).end(Json.encodePrettily(error));
                 }
             } else {
+                logger.error("Load Response error: {}", response.cause());
                 routingContext.response().setStatusCode(500).end();
             }
         });
@@ -114,6 +116,7 @@ public class WebVerticle extends AbstractVerticle {
                 if (response.succeeded()) {
                     vertx.eventBus().send("todo.find.todo", Long.valueOf(id), loadResponse -> parseSearchResult(routingContext, loadResponse));
                 } else {
+                    logger.error("Load Response error: {}", response.cause());
                     routingContext.response().setStatusCode(500).end();
                 }
             });
@@ -132,6 +135,7 @@ public class WebVerticle extends AbstractVerticle {
                 routingContext.response().setStatusCode(500).end(Json.encodePrettily(error));
             }
         } else {
+            logger.error("Load Response error: {}", loadResponse.cause());
             routingContext.response().setStatusCode(500).end();
         }
     }
