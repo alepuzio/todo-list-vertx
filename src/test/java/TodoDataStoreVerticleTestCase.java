@@ -26,7 +26,7 @@ public class TodoDataStoreVerticleTestCase {
     public static void init(final TestContext context) {
         final JsonObject properties = new JsonObject();
         properties.put("datasource.driver", "org.h2.Driver");
-        properties.put("datasource.url", "jdbc:h2:mem:todoDb;DB_CLOSE_DELAY=-1");
+        properties.put("datasource.url", "jdbc:h2:mem:todoDsDb;DB_CLOSE_DELAY=-1");
         properties.put("datasource.user", "sa");
         properties.put("datasource.password", "");
 
@@ -161,6 +161,7 @@ public class TodoDataStoreVerticleTestCase {
 
     @AfterClass
     public static void tearDown(TestContext context) {
+        org.h2.store.fs.FileUtils.deleteRecursive("mem:todoDsDb", true);
         vertx.close(context.asyncAssertSuccess());
     }
 }

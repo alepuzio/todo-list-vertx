@@ -31,7 +31,7 @@ public class TodoWebVerticleTestCase {
 
         final JsonObject properties = new JsonObject();
         properties.put("datasource.driver", "org.h2.Driver");
-        properties.put("datasource.url", "jdbc:h2:mem:todoDb;DB_CLOSE_DELAY=-1");
+        properties.put("datasource.url", "jdbc:h2:mem:todoWebDb;DB_CLOSE_DELAY=-1");
         properties.put("datasource.user", "sa");
         properties.put("datasource.password", "");
         properties.put("http.port", HTTP_PORT);
@@ -55,11 +55,6 @@ public class TodoWebVerticleTestCase {
     @Before
     public void setUp() {
         todoModel = TestUtil.createTestModel();
-    }
-
-    @AfterClass
-    public static void tearDown(TestContext context) {
-        vertx.close(context.asyncAssertSuccess());
     }
 
     @Test
@@ -181,5 +176,11 @@ public class TodoWebVerticleTestCase {
                         async.complete();
                     });
                 }).end();
+    }
+
+    @AfterClass
+    public static void tearDown(TestContext context) {
+        org.h2.store.fs.FileUtils.deleteRecursive("mem:todoWebDb", true);
+        vertx.close(context.asyncAssertSuccess());
     }
 }
