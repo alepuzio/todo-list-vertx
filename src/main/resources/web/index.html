@@ -1,12 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Todo Vert.X App</title>
+    <meta charset="UTF-8" />
+    <title>Todo Vert.x App</title>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
 </head>
 <body>
-<p>
-    this is a homepage for Vert.x page
-</p>
+<div id="todo-content"></div>
+<script type="text/babel">
+
+    var React = require("react");
+
+    var allItems = []
+
+    class TodoList extends React.Component {
+        constructor(props){
+            super(props);
+            this.addEvent = this.addEvent.bind(this);
+        }
+        getInitialState() {
+            return { allItems };
+        }
+        render() {
+            var items = this.props.items.map((item) => {
+                return <li><TodoItem item={item} /></li>;
+            })
+            return(
+                <div>
+                    <ul>{items}</ul>
+                    <p><NewTodoItem addEvent={this.addEvent} /></p>
+                </div>
+            );
+        }
+        addEvent(todoItem){
+            allItems.push(todoItem.newItem);
+            this.setState({ allItems });
+        }
+    }
+
+    class TodoItem extends React.Component {
+        render(){
+            return <div>{this.props.item}</div>;
+        }
+    }
+
+    class NewTodoItem extends React.Component {
+        constructor(props){
+            super(props);
+            this.onSubmit = this.onSubmit.bind(this);
+        }
+        componentDidMount(){
+            React.findDOMNode(this.refs.itemName).focus();
+        }
+        render(){
+            return (<form onSubmit={this.onSubmit}>
+                <input ref="itemName" type="text" />
+            </form>);
+        }
+        onSubmit(event){
+            event.preventDefault();
+            var input = React.findDOMNode(this.refs.itemName)
+            var newItem = input.value;
+            this.props.addEvent({ newItem });
+            input.value = '';
+        }
+    }
+
+    React.render(<TodoList items={allItems} />, document.getElementById('todo-content'));
+</script>
 </body>
 </html>
