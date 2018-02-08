@@ -25,7 +25,7 @@ public class WebVerticle extends AbstractVerticle {
     @Override
     public void start(final Future<Void> webFuture) {
         final Router router = Router.router(getVertx());
-        router.route(HttpMethod.GET,"/").handler(StaticHandler.create("web"));
+        router.route(HttpMethod.GET,"/*").handler(StaticHandler.create("web"));
 
         //Define API REST Routing
         router.get("/api/todo").handler(this::getAll);
