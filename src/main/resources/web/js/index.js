@@ -4,14 +4,20 @@ var _createClass = function () {
             var descriptor = props[i];
             descriptor.enumerable = descriptor.enumerable || false;
             descriptor.configurable = true;
-            if ("value" in descriptor) descriptor.writable = true;
+            if ("value" in descriptor) {
+                descriptor.writable = true;
+            }
             Object.defineProperty(target, descriptor.key, descriptor);
         }
     }
 
     return function (Constructor, protoProps, staticProps) {
-        if (protoProps) defineProperties(Constructor.prototype, protoProps);
-        if (staticProps) defineProperties(Constructor, staticProps);
+        if (protoProps) {
+            defineProperties(Constructor.prototype, protoProps);
+        }
+        if (staticProps) {
+            defineProperties(Constructor, staticProps);
+        }
         return Constructor;
     };
 }();
@@ -41,7 +47,9 @@ function _inherits(subClass, superClass) {
             configurable: true
         }
     });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+    if (superClass) {
+        Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+    }
 }
 
 console.clear();
@@ -50,18 +58,10 @@ var Title = function Title(_ref) {
     var todoCount = _ref.todoCount;
 
     return React.createElement(
-        "div",
-        null,
+        "div", null,
         React.createElement(
-            "div",
-            null,
-            React.createElement(
-                "h1",
-                null,
-                "to-do (",
-                todoCount,
-                ")"
-            )
+            "div", null,
+            React.createElement( "h1", null, "to-do (", todoCount, ")" )
         )
     );
 };
@@ -73,8 +73,7 @@ var TodoForm = function TodoForm(_ref2) {
     var input = void 0;
     // Return JSX
     return React.createElement(
-        "form",
-        {
+        "form", {
             onSubmit: function onSubmit(e) {
                 e.preventDefault();
                 addTodo(input.value);
@@ -91,18 +90,16 @@ var TodoForm = function TodoForm(_ref2) {
 };
 
 var Todo = function Todo(_ref3) {
-    var todo = _ref3.todo,
-        remove = _ref3.remove;
+    var todo = _ref3.todo;
+    var remove = _ref3.remove;
 
     // Each Todo
     return React.createElement(
-        "a",
-        {
+        "a", {
             href: "#", className: "list-group-item", onClick: function onClick() {
                 remove(todo.id);
             }
-        },
-        todo.todoText
+        }, todo.todoText
     );
 };
 
@@ -114,11 +111,7 @@ var TodoList = function TodoList(_ref4) {
     var todoNode = todos.map(function (todo) {
         return React.createElement(Todo, {todo: todo, key: todo.id, remove: remove});
     });
-    return React.createElement(
-        "div",
-        {className: "list-group", style: {marginTop: '30px'}},
-        todoNode
-    );
+    return React.createElement("div", { className: "list-group", style: {marginTop: '30px'} }, todoNode);
 };
 
 // Contaner Component
@@ -144,8 +137,6 @@ var TodoApp = function (_React$Component) {
     }
 
     // Lifecycle method
-
-
     _createClass(TodoApp, [{
         key: "componentDidMount",
         value: function componentDidMount() {
@@ -171,9 +162,8 @@ var TodoApp = function (_React$Component) {
                 _this3.setState({data: _this3.state.data});
             });
         }
-        // Handle remove
-
     }, {
+        // Handle remove
         key: "handleRemove",
         value: function handleRemove(id) {
             var _this4 = this;
@@ -194,8 +184,8 @@ var TodoApp = function (_React$Component) {
             return React.createElement(
                 "div",
                 null,
-                React.createElement(Title, {todoCount: this.state.data.length}),
-                React.createElement(TodoForm, {addTodo: this.addTodo.bind(this)}),
+                React.createElement(Title, { todoCount: this.state.data.length}),
+                React.createElement(TodoForm, { addTodo: this.addTodo.bind(this)}),
                 React.createElement(TodoList, {
                     todos: this.state.data,
                     remove: this.handleRemove.bind(this)
