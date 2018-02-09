@@ -1,10 +1,48 @@
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () {
+    function defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+            var descriptor = props[i];
+            descriptor.enumerable = descriptor.enumerable || false;
+            descriptor.configurable = true;
+            if ("value" in descriptor) descriptor.writable = true;
+            Object.defineProperty(target, descriptor.key, descriptor);
+        }
+    }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+    return function (Constructor, protoProps, staticProps) {
+        if (protoProps) defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) defineProperties(Constructor, staticProps);
+        return Constructor;
+    };
+}();
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+    }
+}
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _possibleConstructorReturn(self, call) {
+    if (!self) {
+        throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+        throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+        constructor: {
+            value: subClass,
+            enumerable: false,
+            writable: true,
+            configurable: true
+        }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
 
 console.clear();
 
@@ -36,14 +74,18 @@ var TodoForm = function TodoForm(_ref2) {
     // Return JSX
     return React.createElement(
         "form",
-        { onSubmit: function onSubmit(e) {
+        {
+            onSubmit: function onSubmit(e) {
                 e.preventDefault();
                 addTodo(input.value);
                 input.value = '';
-            } },
-        React.createElement("input", { className: "form-control col-md-12", ref: function ref(node) {
+            }
+        },
+        React.createElement("input", {
+            className: "form-control col-md-12", ref: function ref(node) {
                 input = node;
-            } }),
+            }
+        }),
         React.createElement("br", null)
     );
 };
@@ -55,10 +97,12 @@ var Todo = function Todo(_ref3) {
     // Each Todo
     return React.createElement(
         "a",
-        { href: "#", className: "list-group-item", onClick: function onClick() {
+        {
+            href: "#", className: "list-group-item", onClick: function onClick() {
                 remove(todo.id);
-            } },
-        todo.text
+            }
+        },
+        todo.todoText
     );
 };
 
@@ -68,11 +112,11 @@ var TodoList = function TodoList(_ref4) {
 
     // Map through the todos
     var todoNode = todos.map(function (todo) {
-        return React.createElement(Todo, { todo: todo, key: todo.id, remove: remove });
+        return React.createElement(Todo, {todo: todo, key: todo.id, remove: remove});
     });
     return React.createElement(
         "div",
-        { className: "list-group", style: { marginTop: '30px' } },
+        {className: "list-group", style: {marginTop: '30px'}},
         todoNode
     );
 };
@@ -95,9 +139,10 @@ var TodoApp = function (_React$Component) {
         _this.state = {
             data: []
         };
-        _this.apiUrl = '//57b1924b46b57d1100a3c3f8.mockapi.io/api/todos';
+        _this.apiUrl = '/api/todo';
         return _this;
     }
+
     // Lifecycle method
 
 
@@ -109,22 +154,21 @@ var TodoApp = function (_React$Component) {
             // Make HTTP reques with Axios
             axios.get(this.apiUrl).then(function (res) {
                 // Set state with result
-                _this2.setState({ data: res.data });
+                _this2.setState({data: res.data});
             });
         }
-        // Add todo handler
-
     }, {
         key: "addTodo",
         value: function addTodo(val) {
             var _this3 = this;
 
             // Assemble data
-            var todo = { text: val
-                // Update data
-            };axios.post(this.apiUrl, todo).then(function (res) {
+            var todo = {
+                todoText: val
+            };
+            axios.post(this.apiUrl, todo).then(function (res) {
                 _this3.state.data.push(res.data);
-                _this3.setState({ data: _this3.state.data });
+                _this3.setState({data: _this3.state.data});
             });
         }
         // Handle remove
@@ -140,7 +184,7 @@ var TodoApp = function (_React$Component) {
             });
             // Update state with filter
             axios.delete(this.apiUrl + '/' + id).then(function (res) {
-                _this4.setState({ data: remainder });
+                _this4.setState({data: remainder});
             });
         }
     }, {
@@ -150,8 +194,8 @@ var TodoApp = function (_React$Component) {
             return React.createElement(
                 "div",
                 null,
-                React.createElement(Title, { todoCount: this.state.data.length }),
-                React.createElement(TodoForm, { addTodo: this.addTodo.bind(this) }),
+                React.createElement(Title, {todoCount: this.state.data.length}),
+                React.createElement(TodoForm, {addTodo: this.addTodo.bind(this)}),
                 React.createElement(TodoList, {
                     todos: this.state.data,
                     remove: this.handleRemove.bind(this)
