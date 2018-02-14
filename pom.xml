@@ -12,7 +12,7 @@
         <vertx.verticle>io.vertx.mokabyte.Todo</vertx.verticle>
         <maven.compiler.source>1.9</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.5.0</vertx.version>
+        <vertx.version>3.5.1</vertx.version>
     </properties>
     <dependencyManagement>
         <dependencies>
