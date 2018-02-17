@@ -62,7 +62,7 @@ public class TodoWebVerticleTestCase {
         final Async async = context.async();
 
         vertx.createHttpClient().getNow(HTTP_PORT, "localhost", "/", response -> response.handler(body -> {
-            context.assertTrue(body.toString().contains("<title>Todo Vert.X App</title>"));
+            context.assertTrue(body.toString().contains("<title>Todo Vert.x App</title>"));
             async.complete();
         }));
     }
