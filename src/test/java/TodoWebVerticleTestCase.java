@@ -5,8 +5,11 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.mokabyte.datastore.DataSourceConfig;
+import io.vertx.mokabyte.datastore.DataStoreVerticle;
 import io.vertx.mokabyte.model.TodoModel;
 import io.vertx.mokabyte.web.WebVerticle;
+import org.flywaydb.core.Flyway;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -25,10 +28,28 @@ public class TodoWebVerticleTestCase {
     @BeforeClass
     public static void init(final TestContext context) {
         vertx = Vertx.vertx();
+
+        final JsonObject properties = new JsonObject();
+        properties.put("datasource.driver", "org.h2.Driver");
+        properties.put("datasource.url", "jdbc:h2:mem:todoWebDb;DB_CLOSE_DELAY=-1");
+        properties.put("datasource.user", "sa");
+        properties.put("datasource.password", "");
+        properties.put("http.port", HTTP_PORT);
+
         final DeploymentOptions options = new DeploymentOptions()
-                .setConfig(new JsonObject().put("http.port", HTTP_PORT));
+                .setConfig(properties);
+
+        initDB(properties);
+
         // We pass the options as the second parameter of the deployVerticle method.
         vertx.deployVerticle(WebVerticle.class.getName(), options, context.asyncAssertSuccess());
+        vertx.deployVerticle(DataStoreVerticle.class.getName(), options, context.asyncAssertSuccess());
+    }
+
+    private static void initDB(JsonObject properties) {
+        final Flyway flyway = new Flyway();
+        flyway.setDataSource(DataSourceConfig.initDataSource(properties));
+        flyway.migrate();
     }
 
     @Before
@@ -36,17 +57,12 @@ public class TodoWebVerticleTestCase {
         todoModel = TestUtil.createTestModel();
     }
 
-    @AfterClass
-    public static void tearDown(TestContext context) {
-        vertx.close(context.asyncAssertSuccess());
-    }
-
     @Test
     public void a_whenRequestRootReturnIndexPage(final TestContext context) {
         final Async async = context.async();
 
         vertx.createHttpClient().getNow(HTTP_PORT, "localhost", "/", response -> response.handler(body -> {
-            context.assertTrue(body.toString().contains("<title>Todo Vert.X App</title>"));
+            context.assertTrue(body.toString().contains("<title>Todo Vert.x App</title>"));
             async.complete();
         }));
     }
@@ -62,7 +78,7 @@ public class TodoWebVerticleTestCase {
                 .putHeader("content-type", "application/json")
                 .putHeader("content-length", bodyLength)
                 .handler(response -> {
-                    context.assertEquals(response.statusCode(), 201);
+                    context.assertEquals(response.statusCode(), 200);
                     context.assertTrue(response.headers().get("content-type").contains("application/json"));
                     response.bodyHandler(body -> {
                         final TodoModel todo = Json.decodeValue(body.toString(), TodoModel.class);
@@ -140,7 +156,7 @@ public class TodoWebVerticleTestCase {
 
         vertx.createHttpClient().delete(HTTP_PORT, "localhost", "/api/todo/1")
                 .handler(response -> {
-                    context.assertEquals(response.statusCode(), 204);
+                    context.assertEquals(response.statusCode(), 200);
                     async.complete();
                 })
                 .end();
@@ -160,5 +176,11 @@ public class TodoWebVerticleTestCase {
                         async.complete();
                     });
                 }).end();
+    }
+
+    @AfterClass
+    public static void tearDown(TestContext context) {
+        org.h2.store.fs.FileUtils.deleteRecursive("mem:todoWebDb", true);
+        vertx.close(context.asyncAssertSuccess());
     }
 }

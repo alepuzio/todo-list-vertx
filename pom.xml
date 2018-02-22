@@ -12,7 +12,7 @@
         <vertx.verticle>io.vertx.mokabyte.Todo</vertx.verticle>
         <maven.compiler.source>1.9</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.5.0</vertx.version>
+        <vertx.version>3.5.1</vertx.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -97,6 +97,14 @@
                 </executions>
                 <configuration>
                     <redeploy>true</redeploy>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20.1</version>
+                <configuration>
+                    <runOrder>alphabetical</runOrder>
                 </configuration>
             </plugin>
         </plugins>
