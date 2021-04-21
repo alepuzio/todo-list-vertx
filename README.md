@@ -7,9 +7,10 @@ This project is a fork from marcorotondi's project [todo-list-vertx](https://git
 
 | Branch | Description | Status |
 |--------|-------------|--------|
-| structure| create the Eclipse structure and guarantee the successful execution of the buidl package | Open |
-| develop | reference for every dev branch, except _hotfix_|Open|
-| master | Reference for stable version | Open |
+| feature/structure | Create the Eclipse structure and guarantee the successful execution of the buidl package | Open |
+| feature/documentation-code | Explicate the source code in Vertx | Open |
+| develop | Reference branch for every dev branch, except _hotfix_ | Open |
+| master | Reference branch for stable version | Open |
 
 
 # Weird error and solution
