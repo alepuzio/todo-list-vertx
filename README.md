@@ -5,12 +5,13 @@ This project is a fork from marcorotondi's project [todo-list-vertx](https://git
 
 ## History of the branches
 
-| Branch | Description | Status |
-|--------|-------------|--------|
-| feature/structure | Create the Eclipse structure and guarantee the successful execution of the buidl package | Open |
-| feature/documentation-code | Explicate the source code in Vertx | Open |
-| develop | Reference branch for every dev branch, except _hotfix_ | Open |
-| master | Reference branch for stable version | Open |
+| Branch | Description | Status | Last update date |
+|--------|-------------|--------|------------------|
+| feature/structure | Create the Eclipse structure and guarantee the successful execution of the buidl package | Open | 2021-04-21 |
+| feature/documentation-code | Explicate the source code in Vertx | Closed | 2021-04-21 |
+| develop | Reference branch for every dev branch, except _hotfix_ | Open | 2021-04-21 |
+| master | Reference branch for stable version | Open | 2021-04-21 |
+
 
 
 # Weird error and solution
