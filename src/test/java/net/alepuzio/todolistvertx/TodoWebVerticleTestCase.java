@@ -16,10 +16,12 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
+
+
 import java.util.Map;
 
 @RunWith(VertxUnitRunner.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)///TODO bad practise, the unit test require no hyp about the order of execution
 public class TodoWebVerticleTestCase {
     private static final int HTTP_PORT = 9000;
 
@@ -32,14 +34,13 @@ public class TodoWebVerticleTestCase {
         vertx = Vertx.vertx();
 
         final JsonObject properties = new JsonObject();
-        properties.put("datasource.driver", "org.h2.Driver");
-        properties.put("datasource.url", "jdbc:h2:mem:todoWebDb;DB_CLOSE_DELAY=-1");
-        properties.put("datasource.user", "sa");
-        properties.put("datasource.password", "");
-        properties.put("http.port", HTTP_PORT);
+        properties.put("datasource.driver", "org.h2.Driver");//TODO using DI
+        properties.put("datasource.url", "jdbc:h2:mem:todoWebDb;DB_CLOSE_DELAY=-1");//TODO using DI
+        properties.put("datasource.user", "sa");//TODO using DI
+        properties.put("datasource.password", "");//TODO using DI
+        properties.put("http.port", HTTP_PORT);//TODO using DI
 
-        final DeploymentOptions options = new DeploymentOptions()
-                .setConfig(properties);
+        final DeploymentOptions options = new DeploymentOptions().setConfig(properties);
 
         initDB(properties);
 
@@ -51,7 +52,7 @@ public class TodoWebVerticleTestCase {
     private static void initDB(JsonObject properties) {
         final Flyway flyway = new Flyway();
         flyway.setDataSource(DataSourceConfig.initDataSource(properties));
-        flyway.migrate();
+        flyway.migrate();//aply the modifies to the initial database
     }
 
     @Before
@@ -60,35 +61,47 @@ public class TodoWebVerticleTestCase {
     }
 
     @Test
-    public void a_whenRequestRootReturnIndexPage(final TestContext context) {
+    public void a_whenRequestRootReturnIndexPage(final TestContext context/*contest of the test using Vertx*/) {
         final Async async = context.async();
-
-        vertx.createHttpClient().getNow(HTTP_PORT, "localhost", "/", response -> response.handler(body -> {
-            context.assertTrue(body.toString().contains("<title>Todo Vert.x App</title>"));
-            async.complete();
-        }));
+        vertx
+        	.createHttpClient()
+        	.getNow(HTTP_PORT, 
+        			"localhost", 
+        			"/", 
+        			response -> response.handler(body -> {
+        											context.assertTrue(body.toString().contains("<title>Todo Vert.x App</title>"));
+        											async.complete();
+        											}
+        										)
+        			);
     }
 
     @Test
     public void b_createNewTodo(final TestContext context) {
         final Async async = context.async();
-
         final String bodyData = Json.encodePrettily(todoModel);
         final String bodyLength = Integer.toString(bodyData.length());
-
-        vertx.createHttpClient().post(HTTP_PORT, "localhost", "/api/todo")
+        vertx
+        	.createHttpClient()
+        	.post(
+        			HTTP_PORT, 
+        			"localhost", 
+        			"/api/todo"
+        		)
                 .putHeader("content-type", "application/json")
                 .putHeader("content-length", bodyLength)
                 .handler(response -> {
                     context.assertEquals(response.statusCode(), 200);
                     context.assertTrue(response.headers().get("content-type").contains("application/json"));
                     response.bodyHandler(body -> {
-                        final TodoModel todo = Json.decodeValue(body.toString(), TodoModel.class);
-                        context.assertEquals(todo.getTodoText(), "Appointment with All");
-                        context.assertNotNull(todo.getId());
-                        async.complete();
-                    });
-                })
+							                        final TodoModel todo = Json.decodeValue(body.toString(), TodoModel.class);
+							                        context.assertEquals(todo.getTodoText(), "Appointment with All");
+							                        context.assertNotNull(todo.getId());
+							                        async.complete();
+                    							}
+                    					);
+                					}
+                		)
                 .write(bodyData)
                 .end();
     }
@@ -96,25 +109,37 @@ public class TodoWebVerticleTestCase {
     @Test
     public void c_loadAllTodo(final TestContext context) {
         final Async async = context.async();
-
-        vertx.createHttpClient().get(HTTP_PORT, "localhost", "/api/todo")
+        vertx.createHttpClient().get(
+        		HTTP_PORT, //port
+        		"localhost", //host 
+        		"/api/todo" //URI
+        		)
                 .handler(response -> {
-                    context.assertEquals(response.statusCode(), 200);
-                    context.assertTrue(response.headers().get("content-type").contains("application/json"));
-                    response.bodyHandler(body -> {
-                        final TodoModel[] todoArray = Json.decodeValue(body.toString(), TodoModel[].class);
-                        context.assertEquals(todoArray.length, 1);
-                        context.assertTrue(todoArray[0].getTodoText().equalsIgnoreCase(todoModel.getTodoText()));
-                        async.complete();
-                    });
-                }).end();
+					                    context.assertEquals(response.statusCode(), 200);
+					                    context.assertTrue(response.headers().get("content-type").contains("application/json"));
+					                    response.bodyHandler(
+					                    		body -> {
+									                        final TodoModel[] todoArray = Json.decodeValue(body.toString(), TodoModel[].class);
+									                        context.assertEquals(todoArray.length, 1);
+									                        context.assertTrue(todoArray[0].getTodoText().equalsIgnoreCase(todoModel.getTodoText()));
+									                        async.complete();
+									                    }
+					                    		);
+			                		}).end();
     }
 
     @Test
     public void d_loadTodoById(final TestContext context) {
-        final Async async = context.async();
-
-        vertx.createHttpClient().get(HTTP_PORT, "localhost", "/api/todo/1")
+        /*
+         * Create and returns a new async object, 
+         * the returned async controls the completion of the test.
+         * */
+    	final Async async = context.async();
+        vertx.createHttpClient().get(
+        		HTTP_PORT, //port
+        		"localhost",//host 
+        		"/api/todo/1"//URI
+        		)
                 .handler(response -> {
                     context.assertEquals(response.statusCode(), 200);
                     context.assertTrue(response.headers().get("content-type").contains("application/json"));
@@ -124,7 +149,8 @@ public class TodoWebVerticleTestCase {
                         context.assertEquals(todo.getId(), 1L);
                         async.complete();
                     });
-                }).end();
+                })
+                .end();//write in the body of the response and close the connection
     }
 
     @Test
@@ -134,20 +160,28 @@ public class TodoWebVerticleTestCase {
         final String bodyData = Json.encodePrettily(Map.of("todoText", "Change Appointment"));
         final String bodyLength = Integer.toString(bodyData.length());
 
-        vertx.createHttpClient().put(HTTP_PORT, "localhost", "/api/todo/1")
+        vertx.createHttpClient()
+        .put(//send PUT HTTP request
+        		HTTP_PORT, //port
+        		"localhost", //host 
+        		"/api/todo/1" //URI
+        		)
                 .putHeader("content-type", "application/json")
                 .putHeader("content-length", bodyLength)
-                .handler(response -> {
-                    context.assertEquals(response.statusCode(), 200);
-                    context.assertTrue(response.headers().get("content-type").contains("application/json"));
-                    response.bodyHandler(body -> {
-                        final TodoModel todo = Json.decodeValue(body.toString(), TodoModel.class);
-                        context.assertNotNull(todo);
-                        context.assertEquals(todo.getTodoText(), "Change Appointment");
-                        context.assertEquals(todo.getId(), 1L);
-                        async.complete();
-                    });
-                })
+                .handler(
+                		response -> {
+				                    context.assertEquals(response.statusCode(), 200);
+				                    context.assertTrue(response.headers().get("content-type").contains("application/json"));
+				                    response.bodyHandler(body -> {
+				                        final TodoModel todo = Json.decodeValue(body.toString(), TodoModel.class);
+				                        context.assertNotNull(todo);
+				                        context.assertEquals(todo.getTodoText(), "Change Appointment");
+				                        context.assertEquals(todo.getId(), 1L);
+				                        System.out.println(String.format("async.count()->{%d}",async.count()));
+				                        async.complete();//Signals the asynchronous operation is done
+				                    });
+                					}
+                		)
                 .write(bodyData)
                 .end();
     }
@@ -155,8 +189,12 @@ public class TodoWebVerticleTestCase {
     @Test
     public void f_deleteTodoById(final TestContext context) {
         final Async async = context.async();
-
-        vertx.createHttpClient().delete(HTTP_PORT, "localhost", "/api/todo/1")
+        vertx.createHttpClient()
+        .delete(
+        		HTTP_PORT,//port 
+        		"localhost", //host 
+        		"/api/todo/1" //URI
+        		)
                 .handler(response -> {
                     context.assertEquals(response.statusCode(), 200);
                     async.complete();
@@ -167,22 +205,28 @@ public class TodoWebVerticleTestCase {
     @Test
     public void g_emptyTodos(final TestContext context) {
         final Async async = context.async();
-
-        vertx.createHttpClient().get(HTTP_PORT, "localhost", "/api/todo")
+        vertx.createHttpClient()
+        		.get(
+        				HTTP_PORT,//port 
+        				"localhost", //host
+        				"/api/todo"//URI
+        				)
                 .handler(response -> {
                     context.assertEquals(response.statusCode(), 200);
                     context.assertTrue(response.headers().get("content-type").contains("application/json"));
                     response.bodyHandler(body -> {
-                        final TodoModel[] todoArray = Json.decodeValue(body.toString(), TodoModel[].class);
-                        context.assertEquals(todoArray.length, 0);
-                        async.complete();
-                    });
-                }).end();
+							                        final TodoModel[] todoArray = Json.decodeValue(body.toString(), TodoModel[].class);
+							                        context.assertEquals(todoArray.length, 0);
+							                        async.complete();
+                    							}
+                    					);
+                })
+                .end();
     }
 
     @AfterClass
     public static void tearDown(TestContext context) {
-        org.h2.store.fs.FileUtils.deleteRecursive("mem:todoWebDb", true);
-        vertx.close(context.asyncAssertSuccess());
+        org.h2.store.fs.FileUtils.deleteRecursive("mem:todoWebDb", true);//TODO using DI
+        vertx.close(context.asyncAssertSuccess());//close Vertical
     }
 }
