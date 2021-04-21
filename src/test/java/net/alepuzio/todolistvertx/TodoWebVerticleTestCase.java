@@ -1,3 +1,4 @@
+package net.alepuzio.todolistvertx;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
@@ -58,7 +59,7 @@ public class TodoWebVerticleTestCase {
         todoModel = TestUtil.createTestModel();
     }
 
-    @Ignore @ Test
+    @Test
     public void a_whenRequestRootReturnIndexPage(final TestContext context) {
         final Async async = context.async();
 
@@ -68,7 +69,7 @@ public class TodoWebVerticleTestCase {
         }));
     }
 
-    @Ignore @ Test
+    @Test
     public void b_createNewTodo(final TestContext context) {
         final Async async = context.async();
 
@@ -92,7 +93,7 @@ public class TodoWebVerticleTestCase {
                 .end();
     }
 
-    @Ignore @ Test
+    @Test
     public void c_loadAllTodo(final TestContext context) {
         final Async async = context.async();
 
@@ -109,7 +110,7 @@ public class TodoWebVerticleTestCase {
                 }).end();
     }
 
-    @Ignore @ Test
+    @Test
     public void d_loadTodoById(final TestContext context) {
         final Async async = context.async();
 
@@ -126,7 +127,7 @@ public class TodoWebVerticleTestCase {
                 }).end();
     }
 
-    @Ignore @ Test
+    @Test
     public void e_updateTodoById(final TestContext context) {
         final Async async = context.async();
 
@@ -151,7 +152,7 @@ public class TodoWebVerticleTestCase {
                 .end();
     }
 
-    @Ignore @ Test
+    @Test
     public void f_deleteTodoById(final TestContext context) {
         final Async async = context.async();
 
@@ -163,7 +164,7 @@ public class TodoWebVerticleTestCase {
                 .end();
     }
 
-    @Ignore @ Test
+    @Test
     public void g_emptyTodos(final TestContext context) {
         final Async async = context.async();
 

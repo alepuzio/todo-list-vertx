@@ -1,3 +1,4 @@
+package net.alepuzio.todolistvertx;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
@@ -51,7 +52,7 @@ public class TodoDataStoreVerticleTestCase {
         todoModel = TestUtil.createTestModel();
     }
 
-    @Ignore @ Test
+    @Test
     public void createNewContent(final TestContext context) {
         final Async async = context.async();
         vertx.eventBus().send("todo.create", Json.encode(todoModel), response -> {
@@ -68,7 +69,7 @@ public class TodoDataStoreVerticleTestCase {
         });
     }
 
-    @Ignore @ Test
+    @Test
     public void readContent(final TestContext context) {
         final Async async = context.async();
         vertx.eventBus().send("todo.find.todo", 1L, response -> {
@@ -84,7 +85,7 @@ public class TodoDataStoreVerticleTestCase {
         });
     }
 
-    @Ignore @ Test
+    @Test
     public void readAllContent(final TestContext context) {
         final Async async = context.async();
         vertx.eventBus().send("todo.find.all", "_ALL_", response -> {
@@ -101,7 +102,7 @@ public class TodoDataStoreVerticleTestCase {
         });
     }
 
-    @Ignore @ Test
+    @Test
     public void updateContent(final TestContext context) {
         final Async async = context.async();
         final TodoModel updateTodo = TestUtil.createTestModel();
@@ -132,7 +133,7 @@ public class TodoDataStoreVerticleTestCase {
         });
     }
 
-    @Ignore @ Test
+    @Test
     public void whenIsLastCallDelete(final TestContext context) {
         final Async async = context.async();
 

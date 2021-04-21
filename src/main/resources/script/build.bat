@@ -1,1 +1,1 @@
-mvn -f ..\..\..\..\pom.xml clean test
+mvn -f ..\..\..\..\pom.xml clean package
