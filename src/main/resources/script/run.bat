@@ -1,0 +1,1 @@
+java -jar ..\..\..\..\target\todolist-project-1.0-SNAPSHOT.jar  -e -X --add-opens java.base/jdk.internal.misc=ALL-UNNAMED -Dio.netty.tryReflectionSetAccessible=true --illegal-access=warn
