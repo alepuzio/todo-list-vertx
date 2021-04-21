@@ -13,7 +13,6 @@ public class DataSourceConfig {
         dataSource.setUrl(config.getString("datasource.url"));
         dataSource.setUsername(config.getString("datasource.user"));
         dataSource.setPassword(config.getString("datasource.password"));
-
         return dataSource;
     }
 }

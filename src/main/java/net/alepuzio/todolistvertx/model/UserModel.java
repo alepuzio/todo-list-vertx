@@ -12,7 +12,9 @@ import java.util.Objects;
 
 public class UserModel implements Serializable {
 
-    private Long id;
+	private static final long serialVersionUID = 1L;
+
+	private Long id;
 
     private String username;
 

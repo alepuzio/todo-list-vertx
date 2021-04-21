@@ -39,11 +39,8 @@ public class TodoWebVerticleTestCase {
         properties.put("datasource.user", "sa");//TODO using DI
         properties.put("datasource.password", "");//TODO using DI
         properties.put("http.port", HTTP_PORT);//TODO using DI
-
-        final DeploymentOptions options = new DeploymentOptions().setConfig(properties);
-
+        final DeploymentOptions options = new DeploymentOptions().setConfig(properties);//deploy config in application
         initDB(properties);
-
         // We pass the options as the second parameter of the deployVerticle method.
         vertx.deployVerticle(WebVerticle.class.getName(), options, context.asyncAssertSuccess());
         vertx.deployVerticle(DataStoreVerticle.class.getName(), options, context.asyncAssertSuccess());

@@ -7,10 +7,14 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
+/**
+ * @overview: fix problem in /deserialize datetime
+ * */
 public class LocalDateSerializer extends StdSerializer<LocalDateTime> {
 
-    protected LocalDateSerializer() {
+	private static final long serialVersionUID = 1L;
+
+	protected LocalDateSerializer() {
         super(LocalDateTime.class);
     }
 
