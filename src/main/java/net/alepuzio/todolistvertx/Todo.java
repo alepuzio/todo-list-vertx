@@ -1,10 +1,11 @@
-package io.vertx.mokabyte;
+package net.alepuzio.todolistvertx;
 
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mokabyte.datastore.DataSourceConfig;
-import io.vertx.mokabyte.datastore.DataStoreVerticle;
-import io.vertx.mokabyte.web.WebVerticle;
+import net.alepuzio.todolistvertx.datastore.DataSourceConfig;
+import net.alepuzio.todolistvertx.datastore.DataStoreVerticle;
+import net.alepuzio.todolistvertx.web.WebVerticle;
+
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

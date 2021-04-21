@@ -1,4 +1,4 @@
-package io.vertx.mokabyte.datastore;
+package net.alepuzio.todolistvertx.datastore;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
@@ -13,9 +13,10 @@ import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLClient;
 import io.vertx.ext.sql.SQLConnection;
 import io.vertx.ext.sql.SQLOptions;
-import io.vertx.mokabyte.model.Error;
-import io.vertx.mokabyte.model.TodoModel;
-import io.vertx.mokabyte.model.UserModel;
+import net.alepuzio.todolistvertx.model.Error;
+import net.alepuzio.todolistvertx.model.TodoModel;
+import net.alepuzio.todolistvertx.model.UserModel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

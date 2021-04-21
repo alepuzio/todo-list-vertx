@@ -1,9 +1,10 @@
-package io.vertx.mokabyte.model;
+package net.alepuzio.todolistvertx.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.vertx.mokabyte.serializer.LocalDateDeserializer;
-import io.vertx.mokabyte.serializer.LocalDateSerializer;
+
+import net.alepuzio.todolistvertx.serializer.LocalDateDeserializer;
+import net.alepuzio.todolistvertx.serializer.LocalDateSerializer;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

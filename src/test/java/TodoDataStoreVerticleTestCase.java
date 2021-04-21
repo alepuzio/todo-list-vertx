@@ -6,9 +6,10 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.mokabyte.datastore.DataSourceConfig;
-import io.vertx.mokabyte.datastore.DataStoreVerticle;
-import io.vertx.mokabyte.model.TodoModel;
+import net.alepuzio.todolistvertx.datastore.DataSourceConfig;
+import net.alepuzio.todolistvertx.datastore.DataStoreVerticle;
+import net.alepuzio.todolistvertx.model.TodoModel;
+
 import org.flywaydb.core.Flyway;
 import org.junit.*;
 import org.junit.runner.RunWith;

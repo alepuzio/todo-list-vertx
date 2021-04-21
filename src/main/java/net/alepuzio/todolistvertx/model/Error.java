@@ -1,4 +1,4 @@
-package io.vertx.mokabyte.model;
+package net.alepuzio.todolistvertx.model;
 
 public class Error {
 

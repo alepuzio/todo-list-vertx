@@ -1,5 +1,5 @@
-import io.vertx.mokabyte.model.TodoModel;
-import io.vertx.mokabyte.model.UserModel;
+import net.alepuzio.todolistvertx.model.TodoModel;
+import net.alepuzio.todolistvertx.model.UserModel;
 
 public class TestUtil {
 

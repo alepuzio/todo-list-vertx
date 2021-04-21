@@ -1,4 +1,4 @@
-package io.vertx.mokabyte.datastore;
+package net.alepuzio.todolistvertx.datastore;
 
 import io.vertx.core.json.JsonObject;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;

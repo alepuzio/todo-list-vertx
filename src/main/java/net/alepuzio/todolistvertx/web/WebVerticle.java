@@ -1,4 +1,4 @@
-package io.vertx.mokabyte.web;
+package net.alepuzio.todolistvertx.web;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
@@ -11,8 +11,9 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
-import io.vertx.mokabyte.model.Error;
-import io.vertx.mokabyte.model.TodoModel;
+import net.alepuzio.todolistvertx.model.Error;
+import net.alepuzio.todolistvertx.model.TodoModel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
