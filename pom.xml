@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.alepuzio</groupId>
     <artifactId>todolistvertx</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <properties>
         <maven.compiler.target>1.9</maven.compiler.target>
         <vertx-maven-plugin.version>1.0.13</vertx-maven-plugin.version>
