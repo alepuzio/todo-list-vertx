@@ -9,6 +9,7 @@ public class DataSourceConfig {
 
     public static DataSource initDataSource(final JsonObject config) {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        System.out.println("config:"+config);
         dataSource.setDriverClassName(config.getString("datasource.driver"));
         dataSource.setUrl(config.getString("datasource.url"));
         dataSource.setUsername(config.getString("datasource.user"));
