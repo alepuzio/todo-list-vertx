@@ -9,6 +9,7 @@ This project is a fork from marcorotondi's project [todo-list-vertx](https://git
 |--------|-------------|--------|------------------|
 | feature/structure | Create the Eclipse structure and guarantee the successful execution of the buidl package | Open | 2021-04-21 |
 | feature/documentation-code | Explicate the source code in Vertx | Closed | 2021-04-21 |
+| feature/clean-code| Fix various bugs and refacotr code | Open  | 2021-04-22 |
 | develop | Reference branch for every dev branch, except _hotfix_ | Open | 2021-04-21 |
 | master | Reference branch for stable version | Open | 2021-04-21 |
 
